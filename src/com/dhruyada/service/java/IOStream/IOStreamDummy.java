@@ -92,8 +92,47 @@ public class IOStreamDummy {
 		
 //		NIO class 
 		Path path = Paths.get("nioDir", "innerNioDir");
-		Files.isDirectory(path);
+		System.out.println("Check if this is a dir " + Files.isDirectory(path));
+		System.out.println("Check if this is a dir " + Files.isRegularFile(path));	
+		System.out.println("===================================================");
+
+		try {
+			Files.createDirectories(path);
+			System.out.println("Check if this is a dir " + Files.isDirectory(path));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("===================================================");
+
+		Path filePath = Paths.get("testDirectoryNio2", "result.csv");
+		try {
+			System.out.println("ppppppppppppppppppppppppppppppppppppppppp");
+			Files.createDirectories(filePath);
+			System.out.println("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (!Files.exists(filePath)) {
+			try {
+				System.out.println("Check if this is a dir " + Files.isDirectory(filePath));
+				System.out.println("Check if this is a dir " + Files.isRegularFile(filePath));
+				Files.createFile(filePath);
+				System.out.println("===================================================");
+				System.out.println("Check if this is a dir " + Files.isDirectory(filePath));
+				System.out.println("Check if this is a dir " + Files.isRegularFile(filePath));
+			} catch (IOException e) {
+				System.out.println("Ch");
+				e.printStackTrace();
+			}
+		}
 		
+		try {
+			Files.delete(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 	}
 }
