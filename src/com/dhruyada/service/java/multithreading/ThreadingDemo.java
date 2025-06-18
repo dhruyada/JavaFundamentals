@@ -28,7 +28,18 @@ public class ThreadingDemo {
         // so we implement runnable and then
         Thread thread1 = new Thread(new MyCounter(1));
         Thread thread2 = new Thread(new MyCounter(2));
+        Thread thread3 = new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Thread no: " + 3 + " and iteration no: " + i);
+            }
+        });
         thread1.start();
         thread2.start();
+        thread3.start();
     }
 }
