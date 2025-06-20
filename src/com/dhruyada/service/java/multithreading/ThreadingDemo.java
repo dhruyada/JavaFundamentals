@@ -23,12 +23,12 @@ class MyCounter implements Runnable {
 
 
 class Brackets {
+    private Object lock = "Lock";
     /**
      * With synchronized this method will only be accessible to a thread
      * when its previous execution is complete
      */
-     public void generate() throws InterruptedException {
-         synchronized(this){
+    static synchronized public void generate() throws InterruptedException {
          for(int i = 0; i<10; i++) {
             Thread.sleep(5);
             System.out.print("[");
@@ -38,7 +38,6 @@ class Brackets {
             System.out.print("]");
         }
         System.out.println();
-        }
         for (int i = 0; i < 10; i++) {
             Thread.sleep(10);
         }
@@ -89,12 +88,14 @@ public class ThreadingDemo {
 //         * this loop is over
 //          */
 
-        Brackets brackets = new Brackets();
+        Brackets brackets1 = new Brackets();
+        Brackets brackets2 = new Brackets();
+
         new Thread(() -> {
             long startTime = System.currentTimeMillis();
             for (int i = 0; i < 5; i++) {
                 try {
-                    brackets.generate();
+                    brackets1.generate();
                 } catch (InterruptedException e) {
                     System.out.println(e.getStackTrace());
                 }
@@ -107,7 +108,7 @@ public class ThreadingDemo {
             long startTime = System.currentTimeMillis();
             for (int i = 0; i < 5; i++) {
                 try {
-                    brackets.generate();
+                    brackets2.generate();
                 } catch (InterruptedException e) {
                     System.out.println(e.getStackTrace());
                 }
