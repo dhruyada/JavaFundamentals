@@ -23,23 +23,49 @@ class MyCounter implements Runnable {
     }
 }
 public class ThreadingDemo {
+    public static int counter = 0;
     public static void main(String[] args) throws InterruptedException {
         //We could directly extend thread but we won't be able to extend anything else
         // so we implement runnable and then
-        Thread thread1 = new Thread(new MyCounter(1));
-        Thread thread2 = new Thread(new MyCounter(2));
-        Thread thread3 = new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-                try {
-                    sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                System.out.println("Thread no: " + 3 + " and iteration no: " + i);
+//        Thread thread1 = new Thread(new MyCounter(1));
+//        Thread thread2 = new Thread(new MyCounter(2));
+//        Thread thread3 = new Thread(() -> {
+//            for (int i = 0; i < 10; i++) {
+//                try {
+//                    sleep(500);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                System.out.println("Thread no: " + 3 + " and iteration no: " + i);
+//            }
+//        });
+//        thread1.start();
+//        thread2.start();
+//        thread3.start();
+
+        //Synchronization Issue
+        new Thread(() -> {
+            for (int i = 0; i < 1000000; i++) {
+                counter++;
             }
-        });
-        thread1.start();
-        thread2.start();
-        thread3.start();
+            System.out.println("this loop is over");
+        }).start();
+
+        new Thread(() -> {
+            for (int i = 0; i < 1000000; i++) {
+                counter++;
+            }
+            System.out.println("this loop is over too");
+        }).start();
+
+
+        System.out.println("Counter is " + counter);
+        /**
+         * Output is
+         * Counter is 11995
+         * this loop is over too
+         * this loop is over
+          */
+
     }
 }
