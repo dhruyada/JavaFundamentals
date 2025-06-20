@@ -1,6 +1,4 @@
 package com.dhruyada.service.java.multithreading;
-
-
 import static java.lang.Thread.sleep;
 
 class MyCounter implements Runnable {
@@ -22,6 +20,31 @@ class MyCounter implements Runnable {
         }
     }
 }
+
+
+class Brackets {
+    /**
+     * With synchronized this method will only be accessible to a thread
+     * when its previous execution is complete
+     */
+     public void generate() throws InterruptedException {
+         synchronized(this){
+         for(int i = 0; i<10; i++) {
+            Thread.sleep(5);
+            System.out.print("[");
+        }
+        for(int i = 0; i<10; i++) {
+            Thread.sleep(5);
+            System.out.print("]");
+        }
+        System.out.println();
+        }
+        for (int i = 0; i < 10; i++) {
+            Thread.sleep(10);
+        }
+    }
+}
+
 public class ThreadingDemo {
     public static int counter = 0;
     public static void main(String[] args) throws InterruptedException {
@@ -44,28 +67,54 @@ public class ThreadingDemo {
 //        thread3.start();
 
         //Synchronization Issue
+//        new Thread(() -> {
+//            for (int i = 0; i < 100000; i++) {
+//                counter++;
+//            }
+//            System.out.println("this loop is over");
+//        }).start();
+//
+//        new Thread(() -> {
+//            for (int i = 0; i < 100000; i++) {
+//                counter++;
+//            }
+//            System.out.println("this loop is over too");
+//        }).start();
+//
+//        System.out.println("Counter is " + counter);
+//        /**
+//         * Output is
+//         * Counter is 11995
+//         * this loop is over too
+//         * this loop is over
+//          */
+
+        Brackets brackets = new Brackets();
         new Thread(() -> {
-            for (int i = 0; i < 1000000; i++) {
-                counter++;
+            long startTime = System.currentTimeMillis();
+            for (int i = 0; i < 5; i++) {
+                try {
+                    brackets.generate();
+                } catch (InterruptedException e) {
+                    System.out.println(e.getStackTrace());
+                }
             }
-            System.out.println("this loop is over");
+            long endTime = System.currentTimeMillis();
+            System.out.println("Time taken by thread 1 " + (endTime-startTime));
         }).start();
 
         new Thread(() -> {
-            for (int i = 0; i < 1000000; i++) {
-                counter++;
+            long startTime = System.currentTimeMillis();
+            for (int i = 0; i < 5; i++) {
+                try {
+                    brackets.generate();
+                } catch (InterruptedException e) {
+                    System.out.println(e.getStackTrace());
+                }
             }
-            System.out.println("this loop is over too");
+            long endTime = System.currentTimeMillis();
+            System.out.println("Time taken by thread 2 " + (endTime-startTime));
         }).start();
-
-
-        System.out.println("Counter is " + counter);
-        /**
-         * Output is
-         * Counter is 11995
-         * this loop is over too
-         * this loop is over
-          */
 
     }
 }
