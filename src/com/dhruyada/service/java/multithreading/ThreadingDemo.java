@@ -1,4 +1,6 @@
 package com.dhruyada.service.java.multithreading;
+import com.sun.tools.javac.Main;
+
 import static java.lang.Thread.sleep;
 
 class MyCounter implements Runnable {
@@ -46,6 +48,25 @@ class Brackets {
 
 public class ThreadingDemo {
     public static int counter = 0;
+    volatile public static int flag = 0;
+    public static int balance = 0;
+
+    public synchronized void withDraw(int amount) throws InterruptedException {
+        if(balance<=0){
+            System.out.println("Waiting for amount to be updated");
+            wait();
+        }
+        balance = balance - amount;
+        System.out.println("Current Balance " + balance);
+    }
+
+    synchronized public void deposit(int amount){
+        System.out.println("Depositing amount in the bank");
+        balance = balance + amount;
+        notify(); //notifies the longest waiting thread but notifyAll will start all waiting
+        System.out.println("Notified");
+    }
+
     public static void main(String[] args) throws InterruptedException {
         //We could directly extend thread but we won't be able to extend anything else
         // so we implement runnable and then
@@ -65,7 +86,9 @@ public class ThreadingDemo {
 //        thread2.start();
 //        thread3.start();
 
-        //Synchronization Issue
+        /**
+         * Synchronization Issue
+         */
 //        new Thread(() -> {
 //            for (int i = 0; i < 100000; i++) {
 //                counter++;
@@ -87,35 +110,87 @@ public class ThreadingDemo {
 //         * this loop is over too
 //         * this loop is over
 //          */
+        /**
+         * Static Synchronization case
+         */
+//        Brackets brackets1 = new Brackets();
+//        Brackets brackets2 = new Brackets();
+//
+//        new Thread(() -> {
+//            long startTime = System.currentTimeMillis();
+//            for (int i = 0; i < 5; i++) {
+//                try {
+//                    brackets1.generate();
+//                } catch (InterruptedException e) {
+//                    System.out.println(e.getStackTrace());
+//                }
+//            }
+//            long endTime = System.currentTimeMillis();
+//            System.out.println("Time taken by thread 1 " + (endTime-startTime));
+//        }).start();
+//
+//        new Thread(() -> {
+//            long startTime = System.currentTimeMillis();
+//            for (int i = 0; i < 5; i++) {
+//                try {
+//                    brackets2.generate();
+//                } catch (InterruptedException e) {
+//                    System.out.println(e.getStackTrace());
+//                }
+//            }
+//            long endTime = System.currentTimeMillis();
+//            System.out.println("Time taken by thread 2 " + (endTime-startTime));
+//        }).start();
+        /**
+         * Volatile Keyword
+         */
+//        new Thread(()->{
+//            int i=0;
+//            while(true){
+//                if(flag==0){
+//                    System.out.println(i + " : Running...");
+//                    i++;
+//                }else{
+//                    break;
+//                }
+//            }
+//        }).start();
+//        new Thread(()->{
+//            try{
+//                Thread.sleep(1000);
+//                flag = 1;
+//                System.out.println("The value of flag updated and thread 1 stopped");
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//
+//        }).start();
 
-        Brackets brackets1 = new Brackets();
-        Brackets brackets2 = new Brackets();
+        /**
+         * Wait & Notify
+         */
 
-        new Thread(() -> {
-            long startTime = System.currentTimeMillis();
-            for (int i = 0; i < 5; i++) {
-                try {
-                    brackets1.generate();
-                } catch (InterruptedException e) {
-                    System.out.println(e.getStackTrace());
-                }
+        ThreadingDemo main = new ThreadingDemo();
+        Thread thread1 = new Thread(() -> {
+            try {
+                main.withDraw(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
-            long endTime = System.currentTimeMillis();
-            System.out.println("Time taken by thread 1 " + (endTime-startTime));
-        }).start();
+        });
+        thread1.setName("Thread 1");
+        thread1.start();
 
-        new Thread(() -> {
-            long startTime = System.currentTimeMillis();
-            for (int i = 0; i < 5; i++) {
-                try {
-                    brackets2.generate();
-                } catch (InterruptedException e) {
-                    System.out.println(e.getStackTrace());
-                }
+        Thread thread2 = new Thread(() -> {
+            try {
+                sleep(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
-            long endTime = System.currentTimeMillis();
-            System.out.println("Time taken by thread 2 " + (endTime-startTime));
-        }).start();
+            main.deposit(5000);
+        });
+        thread2.setName("Thread 2");
+        thread2.start();
 
     }
 }
