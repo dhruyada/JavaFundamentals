@@ -47,24 +47,40 @@ class Brackets {
 }
 
 public class ThreadingDemo {
-    public static int counter = 0;
+    public static int counter1 = 0;
+    public static int counter2 = 0;
     volatile public static int flag = 0;
     public static int balance = 0;
 
-    public synchronized void withDraw(int amount) throws InterruptedException {
+    public synchronized void withDraw(int amount) {
         if(balance<=0){
             System.out.println("Waiting for amount to be updated");
-            wait();
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                System.out.println("Withdraw interrupted ");
+                return;
+            }
+        }
+        if(balance-amount < 0){
+            System.out.println("Balance too low!!");
+            return;
         }
         balance = balance - amount;
         System.out.println("Current Balance " + balance);
     }
 
-    synchronized public void deposit(int amount){
-        System.out.println("Depositing amount in the bank");
-        balance = balance + amount;
-        notify(); //notifies the longest waiting thread but notifyAll will start all waiting
-        System.out.println("Notified");
+    synchronized public boolean deposit(int amount){
+        if(amount>0){
+            System.out.println("Depositing amount in the bank");
+            balance = balance + amount;
+            notify(); //notifies the longest waiting thread but notifyAll will start all waiting
+            System.out.println("Notified");
+            return true;
+        }else {
+            System.out.println("Invalid amount");
+            return false;
+        }
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -170,27 +186,82 @@ public class ThreadingDemo {
          * Wait & Notify
          */
 
-        ThreadingDemo main = new ThreadingDemo();
-        Thread thread1 = new Thread(() -> {
-            try {
-                main.withDraw(2000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+//        ThreadingDemo main = new ThreadingDemo();
+//        Thread thread1 = new Thread(() -> {
+//            main.withDraw(2000);
+//
+//        });
+//        thread1.setName("Thread 1");
+//        thread1.start();
+//
+//        Thread thread2 = new Thread(() -> {
+//            try {
+//                sleep(2000);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//            if(main.deposit(0)){
+//                System.out.println("Transaction Completed");
+//            }else{
+//                thread1.interrupt();  // Sets an internal "interrupted" flag on that thread
+//                // If the thread is blocked (e.g., sleeping, waiting, or joining), it throws an InterruptedException and clears the flag.
+////                if (Thread.currentThread().isInterrupted()) {
+////                      respond to interruption
+////                }
+//
+////                this will be interrupted if there was interruption
+////                public void run() {
+////                    while (!Thread.currentThread().isInterrupted()) {
+////                        // Do some work
+////                    }
+////                    System.out.println("Thread was interrupted");
+////                }
+//            }
+//        });
+//        thread2.setName("Thread 2");
+//        thread2.start();
+
+
+        /**
+         * Thread Join
+         */
+        Thread thread1 = new Thread(()->{
+            for (int i = 0; i < 1000; i++) {
+                try {
+                    sleep(2);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                counter1++;
             }
         });
-        thread1.setName("Thread 1");
         thread1.start();
 
-        Thread thread2 = new Thread(() -> {
+        Thread thread2 = new Thread(()->{
+            for (int i = 0; i < 1000; i++) {
+                try {
+                    sleep(2);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                counter2++;
+            }
+        });
+        thread2.start();
+
+        Thread thread3 = new Thread(() -> {
             try {
-                sleep(2000);
+//                thread1.join(); //first this waiting for thread 1 to complete
+                thread2.join(); //then this waiting for thread 2 to complete
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            main.deposit(5000);
+            System.out.println("Counter1: " + counter1);
+            System.out.println("Counter2: " + counter2);
         });
-        thread2.setName("Thread 2");
-        thread2.start();
+        thread3.start();
+
+        System.out.println("Main Thread!! " + Thread.currentThread().getName());
 
     }
 }
