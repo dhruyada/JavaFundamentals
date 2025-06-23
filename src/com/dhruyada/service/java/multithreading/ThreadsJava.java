@@ -1,5 +1,8 @@
 package com.dhruyada.service.java.multithreading;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 class SomeThread extends Thread{
     private String name;
     public SomeThread(String name){
@@ -22,9 +25,14 @@ class SomeThread extends Thread{
 public class ThreadsJava {
     public static void main(String[] args) {
         SomeThread thread01 = new SomeThread("Thread01");
-        thread01.start();
+//        thread01.start();
+        // The above is fine if we have less no. of threads but what happens if we have more
+        // threads say 100... what then?
+
+        ExecutorService executorService = Executors.newFixedThreadPool(6);
+        executorService.execute(thread01);
+        executorService.shutdown(); //once all the thread are done executing
     }
-    // The above is fine if we have less no. of threads but what happens if we have more
-    // threads say 100... what then?
-    
+
+
 }
