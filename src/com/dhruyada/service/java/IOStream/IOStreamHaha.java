@@ -7,7 +7,7 @@ public class IOStreamHaha {
 
 
     public static void main(String[] args) throws IOException {
-        File file = new File("example_java_file.txt");
+        File file = new File("src/example_java_file.txt");
         file.createNewFile();
     }
 
