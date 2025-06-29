@@ -1,9 +1,6 @@
 package com.dhruyada.service.java.IOStream;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class IOStreamHaha {
 
@@ -23,10 +20,26 @@ public class IOStreamHaha {
         /**
          * Writing Content in a file
          */
-        try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("src/example_java_file.txt"))){
+        try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, true))){
+            bufferedWriter.newLine();
             bufferedWriter.write("some string in file");
+            bufferedWriter.newLine();
+            bufferedWriter.write("some other line");
         } catch (IOException e){
             System.out.println("IOException");
+        }
+
+        /**
+         * Reader to read files
+         */
+        File readFile = new File("src/ReadFromHere.txt");
+        try(BufferedReader br = new BufferedReader(new FileReader(readFile))){
+            String line;
+            while((line = br.readLine())!=null){
+                System.out.println(line);
+            }
+        }catch (IOException io){
+
         }
     }
 }
