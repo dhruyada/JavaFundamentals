@@ -9,3 +9,11 @@ some string in file
 some other line
 some string in file
 some other line
+some string in file
+some other line
+some string in file
+some other line
+some string in file
+some other line
+some string in file
+some other line

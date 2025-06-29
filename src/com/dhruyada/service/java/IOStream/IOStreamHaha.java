@@ -1,6 +1,7 @@
 package com.dhruyada.service.java.IOStream;
 
 import java.io.*;
+import java.util.Scanner;
 
 public class IOStreamHaha {
 
@@ -39,7 +40,21 @@ public class IOStreamHaha {
                 System.out.println(line);
             }
         }catch (IOException io){
+            System.out.println("Booooo Exception");
+        }
 
+        System.out.println("\n+++++++++++Scanner Example+++++++++\n");
+        /**
+         * Scanner
+         */
+        try(Scanner sc = new Scanner(new File("src/ReadFromHere.txt"))){
+            String line;
+            while((sc.hasNext())){
+                line = sc.nextLine();
+                System.out.println(line);
+            }
+        }catch (FileNotFoundException e){
+            e.printStackTrace();
         }
     }
 }
